@@ -45,17 +45,63 @@ class SandwichMachine:
 
     def check_resources(self, ingredients):
         """Returns True when order can be made, False if ingredients are insufficient."""
+                for item, amount in ingredients.items():
+            if self.machine_resources.get(item, 0) < amount:
+                print(f"Sorry, not enough {item}.")
+                return False
+        return True
 
     def process_coins(self):
         """Returns the total calculated from coins inserted.
            Hint: include input() function here, e.g. input("how many quarters?: ")"""
+        print("Please insert coins.")
+        quarters = int(input("how many quarters?: ")) * 0.25
+        dimes = int(input("how many dimes?: ")) * 0.10
+        nickels = int(input("how many nickels?: ")) * 0.05
+        pennies = int(input("how many pennies?: ")) * 0.01
+        return round(quarters + dimes + nickels + pennies, 2)
 
     def transaction_result(self, coins, cost):
         """Return True when the payment is accepted, or False if money is insufficient.
            Hint: use the output of process_coins() function for cost input"""
+        if coins >= cost:
+            change = round(coins - cost, 2)
+            print(f"Transaction successful. Your change is ${change}.")
+            return True
+        else:
+            print("Sorry, that's not enough money. Money refunded.")
+            return False
 
     def make_sandwich(self, sandwich_size, order_ingredients):
         """Deduct the required ingredients from the resources.
            Hint: no output"""
+        """Deduct the required ingredients from the resources."""
+        for item, amount in order_ingredients.items():
+            self.machine_resources[item] -= amount
+        print(f"Here is your {sandwich_size} sandwich. Enjoy!")
+        
+machine = SandwichMachine(resources)
 
+
+def run_machine():
+    while True:
+        choice = input("What size sandwich would you like? (small/medium/large) or 'off' to exit: ").lower()
+        if choice == "off":
+            print("Shutting down the sandwich machine.")
+            return
+        if choice not in recipes:
+            print("Invalid choice. Please choose small, medium, or large.")
+            continue
+        
+        sandwich = recipes[choice]
+        if not machine.check_resources(sandwich["ingredients"]):
+            continue
+        
+        payment = machine.process_coins()
+        if not machine.transaction_result(payment, sandwich["cost"]):
+            continue
+        
+        machine.make_sandwich(choice, sandwich["ingredients"])
+
+run_machine()
 ### Make an instance of SandwichMachine class and write the rest of the codes ###
